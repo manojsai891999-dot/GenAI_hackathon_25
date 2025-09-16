@@ -1,0 +1,161 @@
+# Scheduling Agent Configuration for Vertex AI Agent Engine
+
+apiVersion: v1
+kind: VertexAIAgent
+metadata:
+  name: startup-scheduling-agent
+  description: "AI agent for coordinating meetings and communications with startup founders"
+  
+spec:
+  # Agent Runtime Configuration
+  runtime:
+    type: "vertex-ai-agent-runtime"
+    model: "gemini-1.5-pro"
+    temperature: 0.2
+    maxTokens: 4096
+    
+  # Agent Capabilities
+  capabilities:
+    - calendar_management
+    - email_automation
+    - sms_coordination
+    - availability_matching
+    - reminder_systems
+    
+  # Tools and Integrations
+  tools:
+    - name: "google_calendar"
+      type: "google_calendar_api"
+      config:
+        scopes: ["https://www.googleapis.com/auth/calendar"]
+        
+    - name: "gmail_sender"
+      type: "gmail_api"
+      config:
+        scopes: ["https://www.googleapis.com/auth/gmail.send"]
+        
+    - name: "sms_service"
+      type: "twilio_api"
+      config:
+        service_type: "messaging"
+        
+    - name: "calendly_integration"
+      type: "calendly_api"
+      config:
+        webhook_enabled: true
+        
+    - name: "zoom_meetings"
+      type: "zoom_api"
+      config:
+        meeting_type: "scheduled"
+
+  # Scheduling Configuration
+  scheduling_rules:
+    business_hours:
+      start: "09:00"
+      end: "18:00"
+      timezone: "UTC"
+      
+    meeting_types:
+      initial_interview:
+        duration: 60
+        buffer_before: 15
+        buffer_after: 15
+        
+      follow_up:
+        duration: 30
+        buffer_before: 10
+        buffer_after: 10
+        
+      deep_dive:
+        duration: 90
+        buffer_before: 15
+        buffer_after: 30
+
+  # Communication Templates
+  templates:
+    initial_outreach:
+      subject: "Investment Evaluation Discussion - {{startup_name}}"
+      body: |
+        Dear {{founder_name}},
+        
+        We are currently evaluating {{startup_name}} for potential investment opportunities. 
+        Based on our initial analysis, we would like to schedule a brief discussion to learn more about your vision and progress.
+        
+        Would you be available for a 60-minute video call in the coming week?
+        
+        Best regards,
+        Investment Team
+        
+    meeting_confirmation:
+      subject: "Meeting Confirmed - {{meeting_date}} at {{meeting_time}}"
+      body: |
+        Hi {{founder_name}},
+        
+        This confirms our meeting scheduled for {{meeting_date}} at {{meeting_time}}.
+        
+        Meeting Details:
+        - Duration: {{duration}} minutes
+        - Platform: {{platform}}
+        - Meeting Link: {{meeting_link}}
+        
+        We look forward to speaking with you.
+        
+    reminder_24h:
+      subject: "Reminder: Meeting Tomorrow - {{startup_name}}"
+      body: |
+        Hi {{founder_name}},
+        
+        This is a friendly reminder about our meeting tomorrow:
+        
+        Date: {{meeting_date}}
+        Time: {{meeting_time}}
+        Link: {{meeting_link}}
+        
+        Please let us know if you need to reschedule.
+
+  # Workflow Configuration
+  workflow:
+    steps:
+      - name: "extract_contact_info"
+        description: "Extract founder contact information from evaluation data"
+        timeout: 60
+        
+      - name: "check_availability"
+        description: "Check calendar availability for meeting slots"
+        timeout: 120
+        
+      - name: "send_initial_outreach"
+        description: "Send initial meeting request email"
+        timeout: 60
+        
+      - name: "process_responses"
+        description: "Process email responses and availability"
+        timeout: 180
+        
+      - name: "schedule_meeting"
+        description: "Create calendar event and send confirmations"
+        timeout: 120
+        
+      - name: "setup_reminders"
+        description: "Schedule automated reminders"
+        timeout: 60
+        
+      - name: "prepare_interview_brief"
+        description: "Prepare briefing materials for interview agent"
+        timeout: 120
+
+  # Integration Settings
+  integrations:
+    calendar_sync:
+      enabled: true
+      sync_interval: 300 # 5 minutes
+      
+    email_tracking:
+      enabled: true
+      track_opens: true
+      track_clicks: true
+      
+    sms_fallback:
+      enabled: true
+      delay_hours: 24 # Send SMS if no email response in 24h

@@ -1,0 +1,127 @@
+# Evaluation Agent Configuration for Vertex AI Agent Engine
+
+apiVersion: v1
+kind: VertexAIAgent
+metadata:
+  name: startup-evaluation-agent
+  description: "AI agent for comprehensive startup evaluation and analysis"
+  
+spec:
+  # Agent Runtime Configuration
+  runtime:
+    type: "vertex-ai-agent-runtime"
+    model: "gemini-1.5-pro"
+    temperature: 0.3
+    maxTokens: 8192
+    
+  # Agent Capabilities
+  capabilities:
+    - web_research
+    - document_analysis
+    - competitive_intelligence
+    - market_research
+    - scoring_algorithms
+    
+  # Tools and Integrations
+  tools:
+    - name: "web_search"
+      type: "vertex_ai_search"
+      config:
+        search_engine_id: "startup-research-engine"
+        
+    - name: "document_processor"
+      type: "document_ai"
+      config:
+        processor_type: "FORM_PARSER_PROCESSOR"
+        
+    - name: "company_data"
+      type: "custom_function"
+      endpoint: "https://api-service-url/company-data"
+      
+    - name: "market_analyzer"
+      type: "custom_function"
+      endpoint: "https://api-service-url/market-analysis"
+
+  # Evaluation Criteria Configuration
+  evaluation_criteria:
+    founder_market_fit:
+      weight: 0.25
+      sub_criteria:
+        - domain_expertise: 0.4
+        - previous_experience: 0.3
+        - network_strength: 0.3
+        
+    problem_evaluation:
+      weight: 0.25
+      sub_criteria:
+        - market_size: 0.4
+        - problem_urgency: 0.3
+        - competition_analysis: 0.3
+        
+    usp_evaluation:
+      weight: 0.25
+      sub_criteria:
+        - uniqueness: 0.4
+        - defensibility: 0.3
+        - scalability: 0.3
+        
+    team_profile:
+      weight: 0.25
+      sub_criteria:
+        - technical_skills: 0.4
+        - business_acumen: 0.3
+        - team_dynamics: 0.3
+
+  # Workflow Configuration
+  workflow:
+    steps:
+      - name: "data_extraction"
+        description: "Extract key information from provided documents"
+        timeout: 300
+        
+      - name: "web_research"
+        description: "Conduct comprehensive web research"
+        timeout: 600
+        
+      - name: "competitor_analysis"
+        description: "Analyze competitive landscape"
+        timeout: 400
+        
+      - name: "market_research"
+        description: "Research market size and trends"
+        timeout: 400
+        
+      - name: "founder_analysis"
+        description: "Analyze founder background and fit"
+        timeout: 300
+        
+      - name: "team_evaluation"
+        description: "Evaluate team composition and skills"
+        timeout: 300
+        
+      - name: "scoring"
+        description: "Calculate evaluation scores"
+        timeout: 200
+        
+      - name: "report_generation"
+        description: "Generate comprehensive evaluation report"
+        timeout: 400
+
+  # Output Configuration
+  output:
+    format: "structured_json"
+    schema:
+      type: "object"
+      properties:
+        startup_id:
+          type: "string"
+        evaluation_summary:
+          type: "object"
+        detailed_scores:
+          type: "object"
+        recommendations:
+          type: "array"
+        risk_factors:
+          type: "array"
+        next_steps:
+          type: "array"

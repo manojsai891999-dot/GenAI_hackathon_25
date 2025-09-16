@@ -1,0 +1,192 @@
+# Interview Agent Configuration for Vertex AI Agent Engine
+
+apiVersion: v1
+kind: VertexAIAgent
+metadata:
+  name: startup-interview-agent
+  description: "AI agent for conducting voice interviews with startup founders"
+  
+spec:
+  # Agent Runtime Configuration
+  runtime:
+    type: "vertex-ai-agent-runtime"
+    model: "gemini-1.5-pro"
+    temperature: 0.4
+    maxTokens: 8192
+    
+  # Agent Capabilities
+  capabilities:
+    - voice_conversation
+    - real_time_analysis
+    - dynamic_questioning
+    - sentiment_analysis
+    - interview_summarization
+    
+  # Tools and Integrations
+  tools:
+    - name: "speech_to_text"
+      type: "google_speech_api"
+      config:
+        language_code: "en-US"
+        enable_automatic_punctuation: true
+        
+    - name: "text_to_speech"
+      type: "google_tts_api"
+      config:
+        voice_name: "en-US-Neural2-A"
+        speaking_rate: 1.0
+        
+    - name: "dialogflow_cx"
+      type: "dialogflow_cx"
+      config:
+        project_id: "startup-evaluation-platform"
+        location: "global"
+        
+    - name: "sentiment_analyzer"
+      type: "natural_language_api"
+      config:
+        features: ["sentiment", "entities", "syntax"]
+        
+    - name: "meeting_recorder"
+      type: "cloud_storage"
+      config:
+        bucket: "interview-recordings"
+
+  # Interview Structure
+  interview_structure:
+    introduction:
+      duration: 300 # 5 minutes
+      objectives:
+        - establish_rapport
+        - explain_process
+        - get_consent
+        
+    core_sections:
+      founder_background:
+        duration: 900 # 15 minutes
+        key_questions:
+          - "Tell me about your journey that led to starting this company"
+          - "What specific experience do you have in this market?"
+          - "How did you identify this problem?"
+          
+      problem_deep_dive:
+        duration: 900 # 15 minutes
+        key_questions:
+          - "Walk me through the exact problem you're solving"
+          - "How are customers currently handling this problem?"
+          - "What's the cost of not solving this problem?"
+          
+      solution_validation:
+        duration: 900 # 15 minutes
+        key_questions:
+          - "How does your solution uniquely address this problem?"
+          - "What validation have you done with customers?"
+          - "What's your competitive advantage?"
+          
+      team_dynamics:
+        duration: 600 # 10 minutes
+        key_questions:
+          - "Tell me about your co-founders and key team members"
+          - "How do you handle disagreements in the team?"
+          - "What are the biggest skill gaps you need to fill?"
+          
+      business_model:
+        duration: 900 # 15 minutes
+        key_questions:
+          - "How do you make money?"
+          - "What's your path to profitability?"
+          - "What are your key metrics and current performance?"
+          
+    wrap_up:
+      duration: 300 # 5 minutes
+      objectives:
+        - summarize_key_points
+        - clarify_next_steps
+        - thank_participant
+
+  # Dynamic Question Generation
+  question_strategy:
+    follow_up_triggers:
+      - vague_responses
+      - contradictory_information
+      - missing_details
+      - emotional_indicators
+      
+    probing_techniques:
+      - "Can you give me a specific example?"
+      - "How did you measure that?"
+      - "What was the biggest challenge there?"
+      - "How did customers react to that?"
+
+  # Real-time Analysis
+  analysis_features:
+    sentiment_tracking:
+      enabled: true
+      alert_thresholds:
+        negative: -0.5
+        positive: 0.7
+        
+    confidence_scoring:
+      enabled: true
+      factors:
+        - response_clarity
+        - detail_level
+        - consistency
+        
+    red_flag_detection:
+      enabled: true
+      indicators:
+        - evasive_answers
+        - inconsistent_metrics
+        - unrealistic_projections
+        - team_conflict_signs
+
+  # Conversation Flow Management
+  conversation_management:
+    interruption_handling:
+      enabled: true
+      politeness_level: "high"
+      
+    time_management:
+      section_warnings: true
+      gentle_transitions: true
+      
+    clarification_requests:
+      max_per_section: 3
+      escalation_strategy: "note_and_continue"
+
+  # Output Configuration
+  output_generation:
+    real_time_notes:
+      enabled: true
+      update_interval: 60 # seconds
+      
+    final_report:
+      sections:
+        - executive_summary
+        - detailed_responses
+        - sentiment_analysis
+        - confidence_scores
+        - red_flags
+        - recommendations
+        
+    audio_processing:
+      save_recording: true
+      generate_transcript: true
+      extract_highlights: true
+
+  # Integration with Other Agents
+  agent_coordination:
+    evaluation_agent:
+      share_insights: true
+      update_scores: true
+      
+    scheduling_agent:
+      report_completion: true
+      schedule_followups: true
+
+  # Quality Assurance
+  quality_controls:
+    minimum_duration: 2700 # 45 minutes
+    required_sections: ["founder_background", "problem_deep_dive", "solution_validation"]
+    completeness_threshold: 0.8
