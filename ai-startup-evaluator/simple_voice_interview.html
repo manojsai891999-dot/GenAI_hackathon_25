@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Voice Interview - Syed Ubedulla Khadri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .status-ready {
+            background: rgba(40, 167, 69, 0.3);
+            border: 2px solid #28a745;
+        }
+        
+        .status-listening {
+            background: rgba(220, 53, 69, 0.3);
+            border: 2px solid #dc3545;
+            animation: pulse 1s infinite;
+        }
+        
+        .status-speaking {
+            background: rgba(0, 123, 255, 0.3);
+            border: 2px solid #007bff;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-speak {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .conversation {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .interviewer {
+            background: rgba(0, 123, 255, 0.3);
+            border-left: 4px solid #007bff;
+        }
+        
+        .founder {
+            background: rgba(40, 167, 69, 0.3);
+            border-left: 4px solid #28a745;
+        }
+        
+        .analysis {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .founder-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Live Voice Interview</h1>
+        
+        <div class="founder-info">
+            <h2>👤 Founder: Syed Ubedulla Khadri</h2>
+            <h3>🏢 Startup: TechInnovate Solutions</h3>
+        </div>
+        
+        <div id="status" class="status status-ready">
+            🎯 Ready to start your voice interview!
+        </div>
+        
+        <div>
+            <button id="startBtn" class="btn-start" onclick="startInterview()">
+                🚀 Start Voice Interview
+            </button>
+            <button id="speakBtn" class="btn-speak" onclick="startListening()" disabled>
+                🎙️ Speak Now
+            </button>
+            <button id="stopBtn" class="btn-stop" onclick="stopInterview()" disabled>
+                ⏹️ Stop Interview
+            </button>
+        </div>
+        
+        <div class="conversation" id="conversation">
+            <div class="message interviewer">
+                <strong>🎤 AI Interviewer:</strong> Welcome! Click "Start Voice Interview" to begin our conversation.
+            </div>
+        </div>
+        
+        <div class="analysis">
+            <h3>📊 Real-time Analysis</h3>
+            <div><strong>Current Topic:</strong> <span id="topic">Introduction</span></div>
+            <div><strong>Rapport Level:</strong> <span id="rapport">0.5</span></div>
+            <div><strong>Progress:</strong> <span id="progress">0%</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div><strong>Key Insights:</strong> <span id="insights">None yet</span></div>
+        </div>
+    </div>
+
+    <script>
+        let recognition;
+        let synthesis;
+        let isListening = false;
+        let interviewActive = false;
+        let currentTopic = 'introduction';
+        let rapportLevel = 0.5;
+        let exchangeCount = 0;
+        
+        const topics = ['introduction', 'business_model', 'market_opportunity', 'traction_metrics', 'team_execution', 'funding_vision'];
+        
+        const questions = {
+            introduction: "Hi Syed! Thanks for joining me today. I'm really excited to learn about TechInnovate Solutions and what you're building. To get started, could you tell me about yourself and what inspired you to start your company? What problem are you solving?",
+            
+            business_model: "That's fascinating! Now I'd love to understand how TechInnovate Solutions makes money. What's your revenue model and pricing strategy?",
+            
+            market_opportunity: "That business model sounds solid! Tell me about your market. How big is this opportunity? Who are your main competitors and how do you differentiate?",
+            
+            traction_metrics: "The market opportunity sounds compelling! Let's talk about your traction. What does your growth look like? Can you share some key metrics or customer success stories?",
+            
+            team_execution: "Those are encouraging numbers! Tell me about your team. What's your background? Who are your co-founders? How are you thinking about scaling?",
+            
+            funding_vision: "Sounds like you have a strong foundation! What are your funding needs? How much are you raising and what's your long-term vision for TechInnovate Solutions?"
+        };
+
+        function updateStatus(text, className) {
+            const status = document.getElementById('status');
+            status.textContent = text;
+            status.className = `status ${className}`;
+        }
+
+        function addMessage(speaker, text) {
+            const conversation = document.getElementById('conversation');
+            const message = document.createElement('div');
+            message.className = `message ${speaker}`;
+            
+            const icon = speaker === 'interviewer' ? '🎤' : '👤';
+            const name = speaker === 'interviewer' ? 'AI Interviewer' : 'Syed';
+            
+            message.innerHTML = `<strong>${icon} ${name}:</strong> ${text}`;
+            conversation.appendChild(message);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        function updateAnalysis() {
+            document.getElementById('topic').textContent = currentTopic.replace('_', ' ').toUpperCase();
+            document.getElementById('rapport').textContent = rapportLevel.toFixed(2);
+            
+            const progress = Math.round((topics.indexOf(currentTopic) / topics.length) * 100);
+            document.getElementById('progress').textContent = `${progress}%`;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function initSpeech() {
+            // Initialize Speech Recognition
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+            } else if ('SpeechRecognition' in window) {
+                recognition = new SpeechRecognition();
+            } else {
+                alert('Speech recognition not supported. Please use Chrome or Edge browser.');
+                return false;
+            }
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function() {
+                isListening = true;
+                updateStatus('🎙️ Listening... Speak now!', 'status-listening');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                processResponse(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                updateStatus('❌ Speech error. Click "Speak Now" to try again.', 'status-ready');
+                isListening = false;
+                document.getElementById('speakBtn').disabled = false;
+            };
+
+            recognition.onend = function() {
+                isListening = false;
+            };
+
+            // Initialize Speech Synthesis
+            synthesis = window.speechSynthesis;
+            return true;
+        }
+
+        function startInterview() {
+            if (!initSpeech()) return;
+
+            interviewActive = true;
+            exchangeCount = 0;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('speakBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = false;
+
+            updateStatus('🔊 AI is speaking...', 'status-speaking');
+            
+            const firstQuestion = questions[currentTopic];
+            speakQuestion(firstQuestion);
+        }
+
+        function speakQuestion(text) {
+            addMessage('interviewer', text);
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 0.9;
+
+            utterance.onend = function() {
+                if (interviewActive) {
+                    updateStatus('👂 Your turn! Click "Speak Now" and talk.', 'status-ready');
+                    document.getElementById('speakBtn').disabled = false;
+                }
+            };
+
+            synthesis.speak(utterance);
+        }
+
+        function startListening() {
+            if (!isListening && interviewActive) {
+                document.getElementById('speakBtn').disabled = true;
+                recognition.start();
+            }
+        }
+
+        function processResponse(response) {
+            addMessage('founder', response);
+            
+            // Simple analysis
+            const wordCount = response.split(' ').length;
+            const positiveWords = ['excited', 'great', 'fantastic', 'successful', 'growing'];
+            const hasPositive = positiveWords.some(word => response.toLowerCase().includes(word));
+            
+            if (hasPositive && wordCount > 20) {
+                rapportLevel = Math.min(rapportLevel + 0.1, 1.0);
+            }
+            
+            // Update insights
+            const businessWords = ['revenue', 'customers', 'team', 'growth', 'funding'];
+            const foundInsights = businessWords.filter(word => 
+                response.toLowerCase().includes(word)
+            );
+            
+            if (foundInsights.length > 0) {
+                document.getElementById('insights').textContent = foundInsights.join(', ');
+            }
+            
+            updateAnalysis();
+            
+            // Move to next question
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+
+        function nextQuestion() {
+            const currentIndex = topics.indexOf(currentTopic);
+            
+            if (currentIndex < topics.length - 1) {
+                currentTopic = topics[currentIndex + 1];
+                const nextQ = questions[currentTopic];
+                
+                let enthusiasm = "";
+                if (rapportLevel > 0.7) {
+                    enthusiasm = "That's fantastic! ";
+                } else if (rapportLevel > 0.5) {
+                    enthusiasm = "That's interesting! ";
+                }
+                
+                speakQuestion(enthusiasm + nextQ);
+            } else {
+                // End interview
+                const closing = "Thank you so much for this conversation, Syed! This has been really insightful learning about TechInnovate Solutions. We'll review everything and be in touch with next steps within 48 hours. I'm excited about what you're building!";
+                speakQuestion(closing);
+                
+                setTimeout(() => {
+                    stopInterview();
+                }, 8000);
+            }
+        }
+
+        function stopInterview() {
+            interviewActive = false;
+            
+            if (recognition) recognition.stop();
+            if (synthesis) synthesis.cancel();
+            
+            updateStatus('✅ Interview completed! Thank you Syed.', 'status-ready');
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('speakBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            
+            addMessage('interviewer', `🎉 Interview Summary: ${exchangeCount} exchanges completed. Final rapport: ${rapportLevel.toFixed(2)}. Great conversation about TechInnovate Solutions!`);
+        }
+
+        // Initialize when page loads
+        window.onload = function() {
+            updateStatus('🎯 Ready to start your voice interview!', 'status-ready');
+            console.log('Voice interview system loaded');
+        };
+    </script>
+</body>
+</html>
