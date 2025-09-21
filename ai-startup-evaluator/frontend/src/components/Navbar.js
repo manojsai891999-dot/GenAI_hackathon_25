@@ -14,6 +14,7 @@ import {
   Upload as UploadIcon,
   Analytics as AnalyticsIcon,
   Assessment as AssessmentIcon,
+  SmartToy as ChatIcon,
 } from '@mui/icons-material';
 
 const Navbar = () => {
@@ -30,6 +31,11 @@ const Navbar = () => {
       label: 'Upload',
       path: '/upload',
       icon: <UploadIcon />,
+    },
+    {
+      label: 'AI Interview',
+      path: '/interview-chat',
+      icon: <ChatIcon />,
     },
   ];
 

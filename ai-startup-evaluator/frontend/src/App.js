@@ -10,6 +10,7 @@ import FounderProfiles from './pages/FounderProfiles';
 import MarketBenchmarks from './pages/MarketBenchmarks';
 import RiskAssessment from './pages/RiskAssessment';
 import InterviewAnalysis from './pages/InterviewAnalysis';
+import InterviewChat from './pages/InterviewChat';
 import InvestmentMemo from './pages/InvestmentMemo';
 import FinalEvaluation from './pages/FinalEvaluation';
 
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/interview-chat" element={<InterviewChat />} />
           <Route path="/startup/:id" element={<StartupDetail />}>
             <Route index element={<StartupOverview />} />
             <Route path="founders" element={<FounderProfiles />} />

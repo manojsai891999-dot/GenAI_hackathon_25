@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Agent - Startup Founder Evaluation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .message.interviewer {
+            background: #e3f2fd;
+            margin-right: auto;
+            border-left: 4px solid #2196f3;
+        }
+
+        .message.founder {
+            background: #f3e5f5;
+            margin-left: auto;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .message.system {
+            background: #fff3e0;
+            margin: 0 auto;
+            text-align: center;
+            border-left: 4px solid #ff9800;
+        }
+
+        .message-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .message-content {
+            line-height: 1.6;
+        }
+
+        .analysis {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .analysis-item {
+            margin: 5px 0;
+        }
+
+        .analysis-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.3s ease;
+        }
+
+        .status-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .status-value {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2196f3;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .insight-card {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .insight-card.positive {
+            background: #e8f5e8;
+            border-left: 3px solid #4caf50;
+        }
+
+        .insight-card.negative {
+            background: #ffeaea;
+            border-left: 3px solid #f44336;
+        }
+
+        .insight-card.neutral {
+            background: #fff3e0;
+            border-left: 3px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Interview Agent</h1>
+            <p>Startup Founder Evaluation with CloudSQL + GCS Integration</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="status-panel">
+                    <h3>📊 Session Status</h3>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="session-status">Not Started</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Questions:</span>
+                        <span class="status-value" id="questions-progress">0/6</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Progress:</span>
+                        <span class="status-value" id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="status-panel">
+                    <h3>🎯 Current Analysis</h3>
+                    <div id="current-analysis">
+                        <p style="color: #666; text-align: center;">No analysis yet</p>
+                    </div>
+                </div>
+
+                <div class="status-panel">
+                    <h3>📋 Quick Actions</h3>
+                    <button class="btn btn-primary" onclick="startInterview()" id="start-btn">Start Interview</button>
+                    <button class="btn btn-danger" onclick="endInterview()" id="end-btn" disabled>End Interview</button>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message system">
+                        <div class="message-header">System</div>
+                        <div class="message-content">
+                            Welcome to the AI Interview Agent! This tool will conduct an investment evaluation interview with startup founders.
+                            <br><br>
+                            <strong>Features:</strong>
+                            <ul style="text-align: left; margin-top: 10px;">
+                                <li>Predefined investment-related questions</li>
+                                <li>Real-time response analysis</li>
+                                <li>CloudSQL integration for data storage</li>
+                                <li>GCS integration for report generation</li>
+                                <li>Follow-up question capability</li>
+                            </ul>
+                            <br>
+                            Click "Start Interview" to begin!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div id="setup-form">
+                        <div class="form-group">
+                            <label for="founder-name">Founder Name:</label>
+                            <input type="text" id="founder-name" placeholder="Enter founder name" value="Sarah Johnson">
+                        </div>
+                        <div class="form-group">
+                            <label for="startup-name">Startup Name:</label>
+                            <input type="text" id="startup-name" placeholder="Enter startup name" value="EcoTech Solutions">
+                        </div>
+                    </div>
+
+                    <div id="interview-input" class="hidden">
+                        <div class="input-group">
+                            <input type="text" id="response-input" placeholder="Type your response here..." onkeypress="handleKeyPress(event)">
+                            <button class="btn btn-primary" onclick="sendResponse()" id="send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+        let isInterviewActive = false;
+
+        function startInterview() {
+            const founderName = document.getElementById('founder-name').value;
+            const startupName = document.getElementById('startup-name').value;
+
+            if (!founderName.trim()) {
+                alert('Please enter a founder name');
+                return;
+            }
+
+            // Show loading
+            showLoading('Starting interview...');
+
+            fetch('/start_interview', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    founder_name: founderName,
+                    startup_name: startupName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                if (data.status === 'success') {
+                    currentSessionId = data.session_id;
+                    isInterviewActive = true;
+                    
+                    // Update UI
+                    document.getElementById('setup-form').classList.add('hidden');
+                    document.getElementById('interview-input').classList.remove('hidden');
+                    document.getElementById('start-btn').disabled = true;
+                    document.getElementById('end-btn').disabled = false;
+                    
+                    // Update status
+                    updateStatus('Active', data.total_questions, 0);
+                    
+                    // Add greeting message
+                    addMessage('interviewer', 'AI Interviewer', data.greeting);
+                    
+                    // Focus on input
+                    document.getElementById('response-input').focus();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error starting interview: ' + error.message);
+            });
+        }
+
+        function sendResponse() {
+            const response = document.getElementById('response-input').value.trim();
+            
+            if (!response) {
+                alert('Please enter a response');
+                return;
+            }
+
+            if (!currentSessionId) {
+                alert('No active session');
+                return;
+            }
+
+            // Add founder message
+            addMessage('founder', 'Founder', response);
+            
+            // Clear input
+            document.getElementById('response-input').value = '';
+            
+            // Show loading
+            showLoading('Processing response...');
+
+            fetch('/send_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    response: response
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                if (data.status === 'success') {
+                    // Add interviewer response
+                    addMessage('interviewer', 'AI Interviewer', data.interviewer_message);
+                    
+                    // Update analysis
+                    updateAnalysis(data.analysis);
+                    
+                    // Update progress
+                    if (data.progress) {
+                        updateStatus('Active', data.progress.total_questions, data.progress.questions_answered);
+                    }
+                    
+                    // Check if interview is completed
+                    if (data.interview_completed) {
+                        isInterviewActive = false;
+                        document.getElementById('send-btn').disabled = true;
+                        document.getElementById('response-input').disabled = true;
+                        
+                        // Show completion message
+                        addMessage('system', 'System', data.completion_message);
+                        
+                        // Show summary if available
+                        if (data.summary_report) {
+                            showSummaryReport(data.summary_report);
+                        }
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error processing response: ' + error.message);
+            });
+        }
+
+        function endInterview() {
+            if (currentSessionId) {
+                fetch(`/end_session/${currentSessionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Reset UI
+                    currentSessionId = null;
+                    isInterviewActive = false;
+                    
+                    document.getElementById('setup-form').classList.remove('hidden');
+                    document.getElementById('interview-input').classList.add('hidden');
+                    document.getElementById('start-btn').disabled = false;
+                    document.getElementById('end-btn').disabled = true;
+                    document.getElementById('send-btn').disabled = false;
+                    document.getElementById('response-input').disabled = false;
+                    
+                    // Clear chat
+                    document.getElementById('chat-messages').innerHTML = `
+                        <div class="message system">
+                            <div class="message-header">System</div>
+                            <div class="message-content">
+                                Interview session ended. Click "Start Interview" to begin a new session.
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Reset status
+                    updateStatus('Not Started', 0, 0);
+                    updateAnalysis(null);
+                });
+            }
+        }
+
+        function addMessage(type, sender, content) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">${sender}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function updateStatus(status, total, answered) {
+            document.getElementById('session-status').textContent = status;
+            document.getElementById('questions-progress').textContent = `${answered}/${total}`;
+            
+            const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
+            document.getElementById('progress-percentage').textContent = `${percentage}%`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        function updateAnalysis(analysis) {
+            const analysisDiv = document.getElementById('current-analysis');
+            
+            if (!analysis) {
+                analysisDiv.innerHTML = '<p style="color: #666; text-align: center;">No analysis yet</p>';
+                return;
+            }
+
+            let html = '';
+            
+            if (analysis.key_insights && analysis.key_insights.length > 0) {
+                html += '<div class="insight-card positive">';
+                html += '<strong>💡 Insights:</strong><br>';
+                html += analysis.key_insights.slice(0, 3).join(', ');
+                html += '</div>';
+            }
+            
+            if (analysis.red_flags && analysis.red_flags.length > 0) {
+                html += '<div class="insight-card negative">';
+                html += '<strong>⚠️ Red Flags:</strong><br>';
+                html += analysis.red_flags.slice(0, 2).join(', ');
+                html += '</div>';
+            }
+            
+            if (analysis.positive_signals && analysis.positive_signals.length > 0) {
+                html += '<div class="insight-card positive">';
+                html += '<strong>✅ Positive:</strong><br>';
+                html += analysis.positive_signals.slice(0, 2).join(', ');
+                html += '</div>';
+            }
+            
+            html += `<div class="insight-card neutral">`;
+            html += `<strong>📊 Sentiment:</strong> ${(analysis.sentiment_score * 100).toFixed(0)}% `;
+            html += `<strong>Confidence:</strong> ${(analysis.confidence_score * 100).toFixed(0)}%`;
+            html += '</div>';
+            
+            analysisDiv.innerHTML = html || '<p style="color: #666; text-align: center;">No analysis yet</p>';
+        }
+
+        function showSummaryReport(report) {
+            const chatMessages = document.getElementById('chat-messages');
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'message system';
+            
+            let html = `
+                <div class="message-header">📋 Interview Summary Report</div>
+                <div class="message-content">
+                    <strong>Founder:</strong> ${report.interview_summary.founder_name}<br>
+                    <strong>Startup:</strong> ${report.interview_summary.startup_name}<br>
+                    <strong>Questions Answered:</strong> ${report.interview_summary.total_questions}<br>
+                    <strong>Overall Sentiment:</strong> ${(report.overall_assessment.sentiment_score * 100).toFixed(0)}%<br>
+                    <strong>Overall Confidence:</strong> ${(report.overall_assessment.confidence_score * 100).toFixed(0)}%<br>
+                    <strong>Recommendation:</strong> ${report.overall_assessment.recommendation}<br><br>
+                    
+                    <strong>Key Strengths:</strong><br>
+                    ${report.key_insights.strengths.slice(0, 5).map(s => `• ${s}`).join('<br>')}<br><br>
+                    
+                    <strong>Risks Identified:</strong><br>
+                    ${report.key_insights.risks.slice(0, 3).map(r => `• ${r}`).join('<br>')}<br><br>
+                    
+                    <strong>Next Steps:</strong><br>
+                    ${report.overall_assessment.next_steps.slice(0, 3).map(s => `• ${s}`).join('<br>')}
+                </div>
+            `;
+            
+            summaryDiv.innerHTML = html;
+            chatMessages.appendChild(summaryDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showLoading(message) {
+            const chatMessages = document.getElementById('chat-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message system';
+            loadingDiv.id = 'loading-message';
+            
+            loadingDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    ${message}
+                </div>
+            `;
+            
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading-message');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendResponse();
+            }
+        }
+
+        // Initialize
+        document.getElementById('response-input').addEventListener('keypress', handleKeyPress);
+    </script>
+</body>
+</html>

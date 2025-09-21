@@ -1,0 +1,75 @@
+# Agent Configuration for Agent Engine Deployment
+# This file defines the ADK Interview Agent for deployment to Google Cloud Agent Engine
+
+agent:
+  name: "adk-interview-agent"
+  description: "AI Interview Agent for Startup Founder Evaluation with CloudSQL + GCS Integration"
+  version: "1.0.0"
+  
+  # Agent capabilities
+  capabilities:
+    - "conversational_interview"
+    - "investment_evaluation"
+    - "data_analysis"
+    - "report_generation"
+  
+  # Model configuration
+  model:
+    name: "gemini-2.0-flash"
+    temperature: 0.7
+    max_tokens: 2048
+  
+  # Tools and functions
+  tools:
+    - "start_interview_session"
+    - "process_founder_response"
+    - "generate_summary_report"
+    - "store_response_cloudsql"
+    - "upload_report_gcs"
+  
+  # Memory and session management
+  memory:
+    type: "persistent"
+    storage: "cloudsql"
+  
+  # Database configuration
+  database:
+    type: "cloudsql"
+    instance: "startup-evaluator-db"
+    database: "startup_evaluator"
+    user: "app-user"
+    password: "aianalyst"
+  
+  # Cloud Storage configuration
+  storage:
+    type: "gcs"
+    bucket: "startup-evaluator-storage"
+  
+  # Interview configuration
+  interview:
+    questions:
+      - "What problem is your startup solving?"
+      - "Who are your target customers?"
+      - "What is your current traction (users, revenue, growth)?"
+      - "What is your business model?"
+      - "Who are your competitors and how are you different?"
+      - "What is your fundraising goal and how will you use the capital?"
+    
+    follow_up_enabled: true
+    analysis_enabled: true
+    report_generation: true
+  
+  # Deployment settings
+  deployment:
+    region: "us-central1"
+    min_instances: 1
+    max_instances: 10
+    timeout: 300
+    memory: "2Gi"
+    cpu: "2"
+  
+  # Environment variables
+  env:
+    DATABASE_URL: "postgresql://app-user:aianalyst@/startup_evaluator?host=/cloudsql/startup-evaluator-db"
+    GCS_BUCKET_NAME: "startup-evaluator-storage"
+    DEBUG: "false"

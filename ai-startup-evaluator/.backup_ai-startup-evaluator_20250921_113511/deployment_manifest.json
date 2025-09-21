@@ -1,0 +1,25 @@
+{
+  "name": "adk-interview-agent",
+  "version": "1.0.0",
+  "description": "AI Interview Agent for Startup Founder Evaluation with CloudSQL + GCS Integration",
+  "runtime": "python3.11",
+  "entrypoint": "main_agent.py",
+  "requirements": "requirements.txt",
+  "environment": {
+    "DATABASE_URL": "postgresql://app-user:aianalyst@/startup_evaluator?host=/cloudsql/startup-evaluator-db",
+    "GCS_BUCKET_NAME": "startup-evaluator-storage",
+    "DEBUG": "false"
+  },
+  "resources": {
+    "memory": "2Gi",
+    "cpu": "2",
+    "timeout": "300s"
+  },
+  "tools": [
+    "start_interview_session",
+    "process_founder_response",
+    "get_interview_status",
+    "generate_interview_report",
+    "list_active_sessions"
+  ]
+}

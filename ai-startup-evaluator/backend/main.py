@@ -22,6 +22,9 @@ from models.pydantic_models import (
 # from agents.orchestrator import startup_evaluator
 # from services.gcs_service import gcs_service
 
+# Import the agent API
+from api.agent_api import router as agent_router
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,11 +39,19 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",  # React dev server
+        "https://ai-startup-evaluator-frontend-xxxxxxxxx-uc.a.run.app",  # Production frontend
+        "https://*.run.app"  # Allow all Cloud Run services
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include the agent API router
+app.include_router(agent_router)
 
 # Create database tables on startup
 @app.on_event("startup")

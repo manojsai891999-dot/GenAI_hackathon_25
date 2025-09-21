@@ -1,0 +1,32 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/execution-environment: gen2
+    run.googleapis.com/ingress: all
+  name: adk-interview-agent
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '10'
+        run.googleapis.com/cpu-throttling: 'false'
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      containerConcurrency: 100
+      containers:
+      - env:
+        - name: DATABASE_URL
+          value: postgresql://app-user:aianalyst@/startup_evaluator?host=/cloudsql/startup-evaluator-db
+        - name: GCS_BUCKET_NAME
+          value: startup-evaluator-storage
+        - name: DEBUG
+          value: 'false'
+        image: gcr.io/PROJECT_ID/adk-interview-agent
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: '2'
+            memory: 2Gi
+      timeoutSeconds: 300

@@ -1,0 +1,18 @@
+[project]
+name = "extractor_agent"
+version = "1.0.0"
+description = "AI agent for startup evaluation"
+requires-python = ">=3.9"
+dependencies = [
+    "google-adk>=0.2.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.5.0",
+    "google-cloud-storage>=2.10.0",
+    "google-cloud-aiplatform>=1.71.1",
+    "vertexai>=1.71.1",
+    "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.0.23",
+    "pg8000>=1.30.3",
+    "psycopg2-binary>=2.9.9"
+]
